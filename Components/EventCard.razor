@@ -1,0 +1,103 @@
+<div class="event-card">
+    <div class="event-card-header">
+        <span class="event-category">@Event.Category</span>
+        <span>@Event.Date.ToString("MMM d, yyyy")</span>
+    </div>
+
+    @if (isEditing)
+    {
+        <div class="edit-panel">
+            <label>
+                Event Name
+                <input @bind="editableName" />
+            </label>
+
+            <label>
+                Event Date
+                <input type="date" @bind="editableDate" />
+            </label>
+
+            <label>
+                Location
+                <input @bind="editableLocation" />
+            </label>
+
+            @if (!string.IsNullOrWhiteSpace(editError))
+            {
+                <p class="error-message" role="alert">@editError</p>
+            }
+
+            <button class="secondary-button" type="button" @onclick="SavePreviewChanges">Apply Preview</button>
+            <button class="text-button" type="button" @onclick="CancelEdit">Cancel</button>
+        </div>
+    }
+    else
+    {
+        <h2>@Event.Name</h2>
+        <p>@Event.Description</p>
+        <p><strong>Location:</strong> @Event.Location</p>
+        <p><strong>Capacity:</strong> @Event.Capacity attendees</p>
+
+        <div class="button-row">
+            <NavLink class="button-link" href="@($"/event/{Event.Id}")">View Details</NavLink>
+            <NavLink class="button-link accent" href="@($"/register/{Event.Id}")">Register</NavLink>
+            <button class="text-button" type="button" @onclick="BeginEdit">Edit Preview</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public EventModel Event { get; set; } = new();
+
+    private bool isEditing;
+    private string editableName = string.Empty;
+    private string editableLocation = string.Empty;
+    private DateTime editableDate = DateTime.Today;
+    private string editError = string.Empty;
+    private int currentEventId;
+
+    protected override void OnParametersSet()
+    {
+        if (currentEventId != Event.Id)
+        {
+            currentEventId = Event.Id;
+            ResetEditableFields();
+        }
+    }
+
+    private void BeginEdit()
+    {
+        ResetEditableFields();
+        isEditing = true;
+    }
+
+    private void CancelEdit()
+    {
+        editError = string.Empty;
+        isEditing = false;
+    }
+
+    private void SavePreviewChanges()
+    {
+        if (string.IsNullOrWhiteSpace(editableName) || string.IsNullOrWhiteSpace(editableLocation))
+        {
+            editError = "Event name and location are required.";
+            return;
+        }
+
+        Event.Name = editableName.Trim();
+        Event.Location = editableLocation.Trim();
+        Event.Date = editableDate;
+        editError = string.Empty;
+        isEditing = false;
+    }
+
+    private void ResetEditableFields()
+    {
+        editableName = Event.Name;
+        editableLocation = Event.Location;
+        editableDate = Event.Date;
+        editError = string.Empty;
+    }
+}

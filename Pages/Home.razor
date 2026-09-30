@@ -1,0 +1,27 @@
+@page "/"
+
+<PageTitle>Home | EventEase</PageTitle>
+
+<section class="hero">
+    <h1>Welcome to EventEase</h1>
+    <p>
+        Browse upcoming corporate and social events, view details, register for events,
+        and track attendance from one simple Blazor application.
+    </p>
+
+    <div class="button-row">
+        <NavLink class="button-link" href="/events">Browse Events</NavLink>
+        <NavLink class="button-link accent" href="/attendance">View Attendance</NavLink>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Project Features</h2>
+    <ul>
+        <li>Reusable Event Card component with editable fields and two-way binding.</li>
+        <li>Routing between event list, details, registration, attendance, and session pages.</li>
+        <li>Validation to prevent invalid registration data.</li>
+        <li>State management to track user session activity.</li>
+        <li>Performance-conscious rendering for event lists.</li>
+    </ul>
+</section>

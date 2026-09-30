@@ -1,0 +1,40 @@
+@page "/events"
+
+@inject EventService EventService
+
+<PageTitle>Events | EventEase</PageTitle>
+
+<h1>Events</h1>
+
+<p>
+    Search and browse upcoming EventEase events. The event cards use data binding so fields can be
+    preview-edited directly in the component.
+</p>
+
+<label class="search-box">
+    Search events
+    <input @bind="searchText" @bind:event="oninput" placeholder="Search by name, category, or location" />
+</label>
+
+@if (!FilteredEvents.Any())
+{
+    <section class="card error-panel">
+        <h2>No matching events</h2>
+        <p>Try another search term.</p>
+    </section>
+}
+else
+{
+    <div class="event-grid">
+        <Virtualize Items="FilteredEvents" Context="eventItem" ItemSize="280">
+            <EventCard @key="eventItem.Id" Event="eventItem" />
+        </Virtualize>
+    </div>
+}
+
+@code {
+    private string searchText = string.Empty;
+
+    private List<EventModel> FilteredEvents =>
+        EventService.SearchEvents(searchText).ToList();
+}

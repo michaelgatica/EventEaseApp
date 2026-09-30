@@ -1,0 +1,28 @@
+Help me create and upload my final EventEase Blazor project to GitHub using the GitHub website.
+
+Use these settings:
+- Repository name: EventEaseApp
+- Visibility: Public
+- Description: Blazor WebAssembly event management app with event cards, routing, validation, state management, and attendance tracking.
+- Initial commit message: Initial EventEase Blazor project
+
+Important upload instructions:
+- I will unzip the project first.
+- Do not upload the zip file itself.
+- Upload the contents of the EventEaseApp folder so the repository root contains files like:
+  - EventEaseApp.csproj
+  - Program.cs
+  - App.razor
+  - README.md
+  - COPILOT_SUMMARY.md
+  - TEST_PLAN.md
+  - Components/
+  - Layout/
+  - Models/
+  - Pages/
+  - Services/
+  - wwwroot/
+- After uploading, commit the files.
+- After the commit completes, give me the repository URL so I can submit it for my assignment.
+
+Please guide me step by step through the current GitHub web interface and pause whenever I need to choose files from my computer.

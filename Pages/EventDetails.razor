@@ -1,0 +1,58 @@
+@page "/event/{Id:int}"
+
+@inject EventService EventService
+@inject UserSessionService SessionService
+
+<PageTitle>Event Details | EventEase</PageTitle>
+
+@if (eventItem is null)
+{
+    <section class="card error-panel">
+        <h1>Event Not Found</h1>
+        <p>The requested event could not be found. It may have been removed or the link may be invalid.</p>
+        <NavLink class="button-link" href="/events">Back to Events</NavLink>
+    </section>
+}
+else
+{
+    <section class="card details-card">
+        <h1>@eventItem.Name</h1>
+        <p class="event-category">@eventItem.Category</p>
+
+        <dl>
+            <dt>Date</dt>
+            <dd>@eventItem.Date.ToString("dddd, MMMM d, yyyy h:mm tt")</dd>
+
+            <dt>Location</dt>
+            <dd>@eventItem.Location</dd>
+
+            <dt>Description</dt>
+            <dd>@eventItem.Description</dd>
+
+            <dt>Capacity</dt>
+            <dd>@eventItem.Capacity attendees</dd>
+        </dl>
+
+        <div class="button-row">
+            <NavLink class="button-link accent" href="@($"/register/{eventItem.Id}")">Register</NavLink>
+            <NavLink class="button-link" href="/events">Back to Events</NavLink>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private EventModel? eventItem;
+
+    protected override void OnParametersSet()
+    {
+        eventItem = EventService.GetEventById(Id);
+
+        if (eventItem is not null)
+        {
+            SessionService.TrackEventView(eventItem);
+        }
+    }
+}

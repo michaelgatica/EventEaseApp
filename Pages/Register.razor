@@ -1,0 +1,99 @@
+@page "/register/{Id:int}"
+
+@inject EventService EventService
+@inject UserSessionService SessionService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register | EventEase</PageTitle>
+
+@if (eventItem is null)
+{
+    <section class="card error-panel">
+        <h1>Registration Unavailable</h1>
+        <p>The event you selected could not be found.</p>
+        <NavLink class="button-link" href="/events">Back to Events</NavLink>
+    </section>
+}
+else
+{
+    <h1>Register for @eventItem.Name</h1>
+
+    @if (!string.IsNullOrWhiteSpace(statusMessage))
+    {
+        <p class="@statusClass" role="status">@statusMessage</p>
+    }
+
+    <EditForm Model="registration" OnValidSubmit="HandleValidSubmit" class="form-card">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <InputText id="name" class="form-control" @bind-Value="registration.Name" />
+            <ValidationMessage For="@(() => registration.Name)" />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="registration.Email" />
+            <ValidationMessage For="@(() => registration.Email)" />
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <InputText id="phone" class="form-control" @bind-Value="registration.Phone" />
+            <ValidationMessage For="@(() => registration.Phone)" />
+        </div>
+
+        <div class="form-group">
+            <label for="ticket">Ticket Type</label>
+            <InputSelect id="ticket" class="form-control" @bind-Value="registration.TicketType">
+                <option value="General Admission">General Admission</option>
+                <option value="VIP">VIP</option>
+                <option value="Staff">Staff</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => registration.TicketType)" />
+        </div>
+
+        <button class="primary-button" type="submit">Submit Registration</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private EventModel? eventItem;
+    private EventRegistration registration = new();
+    private string statusMessage = string.Empty;
+    private string statusClass = "success-message";
+
+    protected override void OnParametersSet()
+    {
+        eventItem = EventService.GetEventById(Id);
+
+        if (eventItem is not null)
+        {
+            registration = new EventRegistration
+            {
+                EventId = eventItem.Id,
+                EventName = eventItem.Name
+            };
+
+            SessionService.TrackEventView(eventItem);
+        }
+    }
+
+    private void HandleValidSubmit()
+    {
+        bool success = EventService.Register(registration, out string message);
+        statusMessage = message;
+        statusClass = success ? "success-message" : "error-message";
+
+        if (success)
+        {
+            SessionService.TrackRegistration(registration);
+            NavigationManager.NavigateTo("/attendance");
+        }
+    }
+}

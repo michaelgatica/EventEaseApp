@@ -1,0 +1,75 @@
+@page "/attendance"
+
+@inject EventService EventService
+
+<PageTitle>Attendance | EventEase</PageTitle>
+
+<h1>Attendance Tracker</h1>
+
+<p>
+    This page monitors event participation by showing registrations and allowing attendees to be checked in.
+</p>
+
+@if (!EventService.GetRegistrations().Any())
+{
+    <section class="card">
+        <h2>No registrations yet</h2>
+        <p>Register for an event first, then return here to track attendance.</p>
+        <NavLink class="button-link" href="/events">Browse Events</NavLink>
+    </section>
+}
+else
+{
+    @foreach (var eventItem in EventService.GetEvents())
+    {
+        var registrations = EventService.GetRegistrationsForEvent(eventItem.Id).ToList();
+
+        if (registrations.Any())
+        {
+            <section class="card">
+                <h2>@eventItem.Name</h2>
+                <p><strong>Registered:</strong> @registrations.Count | <strong>Checked In:</strong> @registrations.Count(r => r.CheckedIn)</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Ticket</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var registration in registrations)
+                        {
+                            <tr>
+                                <td>@registration.Name</td>
+                                <td>@registration.Email</td>
+                                <td>@registration.TicketType</td>
+                                <td>@(registration.CheckedIn ? "Checked In" : "Registered")</td>
+                                <td>
+                                    @if (registration.CheckedIn)
+                                    {
+                                        <span class="checked-in">Complete</span>
+                                    }
+                                    else
+                                    {
+                                        <button class="small-button" type="button" @onclick="() => CheckIn(registration.Id)">Check In</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+        }
+    }
+}
+
+@code {
+    private void CheckIn(int registrationId)
+    {
+        EventService.CheckInRegistration(registrationId);
+    }
+}
